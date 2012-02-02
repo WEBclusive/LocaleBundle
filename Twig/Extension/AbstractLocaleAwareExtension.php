@@ -4,6 +4,7 @@ namespace Lunetics\LocaleBundle\Twig\Extension;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\Locale\Exception\MethodNotImplementedException;
 
 /**
  * Common base class for Twig extensions dealing with the current locale.
@@ -61,7 +62,17 @@ abstract class AbstractLocaleAwareExtension extends \Twig_Extension
      */
     public function getLocaleLanguage()
     {
-        return \Locale::getPrimaryLanguage($this->getServiceContainer()->get('request')->getLocale());
+        try {
+
+            return \Locale::getPrimaryLanguage($this->getServiceContainer()->get('request')->getLocale());
+
+        } catch(MethodNotImplementedException $e) {
+
+            return $this->getServiceContainer()->get('request')->getLocale();
+
+        }
+
+        return;
     }
 
 }

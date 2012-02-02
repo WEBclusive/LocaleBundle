@@ -2,6 +2,8 @@
 
 namespace Lunetics\LocaleBundle\Twig\Extension;
 
+use Symfony\Component\Locale\Exception\MethodNotImplementedException;
+
 /**
  * Twig extension providing helpers for implementing a language change mechanism and handling localized routes.
  *
@@ -127,7 +129,11 @@ class ChangeLanguageExtension extends AbstractLocaleAwareExtension
 
         $localeToUse = $this->showForeignLanguageNames ? $locale : $this->getLocale();
 
-        $languageName = \Locale::getDisplayName($locale, $localeToUse);
+        try {
+            $languageName = \Locale::getDisplayName($locale, $localeToUse);
+        } catch (MethodNotImplementedException $e) {
+            $languageName = $locale;
+        }
 
         if ($this->showFirstUppercase) {
             if (!extension_loaded('mbstring')) {

@@ -60,7 +60,7 @@ class LocaleController
     public function switchAction(Request $request, $_locale)
     {
         // Check if the Language is allowed
-        if (!in_array(\Locale::getPrimaryLanguage($_locale), $this->allowedLanguages)) {
+        if (!in_array($_locale, $this->allowedLanguages)) {
             throw new NotFoundHttpException('This language is not available');
         }
 
