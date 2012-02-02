@@ -22,6 +22,9 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->booleanNode('use_browser_language')
+                    ->defaultValue(true)
+                ->end()
                 ->arrayNode('change_language')
                     ->addDefaultsIfNotSet()
                     ->children()

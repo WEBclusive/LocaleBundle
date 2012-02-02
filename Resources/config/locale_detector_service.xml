@@ -10,6 +10,7 @@
         <service id="kernel.listener.locale_detector_listener" class="%locale_detector_listener.class%">
             <argument>%locale%</argument>
             <argument>%lunetics_locale.allowed_languages%</argument>
+            <argument>%lunetics_locale.use_browser_language%</argument>
             <argument type="service" id="logger"/>
             <call method="setEventDispatcher">
                 <argument type="service" id="event_dispatcher"/>

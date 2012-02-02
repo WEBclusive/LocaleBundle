@@ -36,6 +36,7 @@ class LuneticsLocaleExtension extends Extension
         $container->setParameter('lunetics_locale.change_language.show_foreign_languagenames', $config['change_language']['show_foreign_languagenames']);
         $container->setParameter('lunetics_locale.change_language.show_first_uppercase', $config['change_language']['show_first_uppercase']);
         $container->setParameter('lunetics_locale.change_language.show_languagetitle', $config['change_language']['show_languagetitle']);
+        $container->setParameter('lunetics_locale.use_browser_language', $config['use_browser_language']);
 
     }
 }

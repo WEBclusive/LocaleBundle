@@ -8,6 +8,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\Locale\Locale;
 
 /**
  * Class for the Locale Detector
@@ -40,17 +41,23 @@ class LocaleDetectorListener
     private $cookieListenerisAdded = false;
 
     /**
+     * @var boolean
+     */
+    private $useBrowserLanguage;
+
+    /**
      * Setup the Locale Listener
      *
      * @param                                                        $defaultLocale      The default Locale
      * @param                                                        $availableLanguages List of available / allowed locales
      * @param null|\Symfony\Component\HttpKernel\Log\LoggerInterface $logger             Logger Interface
      */
-    public function __construct($defaultLocale, $availableLanguages, LoggerInterface $logger = null)
+    public function __construct($defaultLocale, $availableLanguages, $useBrowserLanguage, LoggerInterface $logger = null)
     {
         $this->defaultLocale = $defaultLocale;
         $this->logger = $logger;
         $this->availableLanguages = $availableLanguages;
+        $this->useBrowserLanguage = $useBrowserLanguage;
     }
     /**
      * DI Setter for the EventDispatcher
@@ -113,26 +120,32 @@ class LocaleDetectorListener
         }
 
         // Get the Preferred Language from the Browser
-        $preferredLanguage = $request->getPreferredLanguage();
-        $providedLanguages = $request->getLanguages();
+        if ($this->useBrowserLanguage) {
+            $preferredLanguage = $request->getPreferredLanguage();
+            $providedLanguages = $request->getLanguages();
 
-        if (!$preferredLanguage OR count($providedLanguages) === 0) {
-            $preferredLanguage = $this->defaultLocale;
-        } else if (!in_array(\Locale::getPrimaryLanguage($preferredLanguage), $this->availableLanguages)) {
-
-            $availableLanguages = $this->availableLanguages;
-            $map = function($v) use ($availableLanguages)
-            {
-                if (in_array(\Locale::getPrimaryLanguage($v), $availableLanguages)) {
-                    return true;
-                }
-            };
-            $result = array_values(array_filter($providedLanguages, $map));
-            if (is_array($result)) {
-                $preferredLanguage = $result[0];
-            } else {
+            if (!$preferredLanguage OR count($providedLanguages) === 0) {
                 $preferredLanguage = $this->defaultLocale;
+            } else if (!in_array(Locale::getPrimaryLanguage($preferredLanguage), $this->availableLanguages)) {
+
+                $availableLanguages = $this->availableLanguages;
+                $map = function($v) use ($availableLanguages)
+                {
+                    if (in_array(Locale::getPrimaryLanguage($v), $availableLanguages)) {
+                        return true;
+                    }
+                };
+                $result = array_values(array_filter($providedLanguages, $map));
+                if (is_array($result)) {
+                    $preferredLanguage = $result[0];
+                } else {
+                    $preferredLanguage = $this->defaultLocale;
+                }
             }
+        } else {
+
+            $preferredLanguage = $this->defaultLocale;
+
         }
 
         $request->setLocale($preferredLanguage);
