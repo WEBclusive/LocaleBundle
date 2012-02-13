@@ -119,6 +119,8 @@ class LocaleDetectorListener
             return;
         }
 
+
+
         // Get the Preferred Language from the Browser
         if ($this->useBrowserLanguage) {
             $preferredLanguage = $request->getPreferredLanguage();
@@ -145,6 +147,11 @@ class LocaleDetectorListener
         } else {
 
             $preferredLanguage = $this->defaultLocale;
+
+            //Load from Cookie
+            if ($request->cookies->has('locale')) {
+                $preferredLanguage = $request->cookies->get('locale');
+            }
 
         }
 
